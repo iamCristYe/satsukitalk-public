@@ -1,8 +1,16 @@
 name: Save message title
 
 on:
-  repository_dispatch:
-    types: [save-title]
+  workflow_dispatch:
+    inputs:
+      message_id:
+        description: 'Unique message ID'
+        required: true
+        type: string
+      message_title:
+        description: 'Title of the message'
+        required: true
+        type: string
 
 jobs:
   save-title:
