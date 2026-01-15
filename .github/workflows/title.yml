@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Print received payload
         run: |
-          echo "message_id: ${{ github.event.client_payload.message_id }}"
-          echo "message_title: ${{ github.event.client_payload.message_title }}"
+          echo "message_id: ${{ inputs.message_id }}"
+          echo "message_title: ${{ inputs.message_title }}"
 
       - name: Clone Private Repo
         env:
@@ -39,22 +39,38 @@ jobs:
           cd satsukitalk
           python save_title.py
         env:
-          message_id: ${{ github.event.client_payload.message_id }}
-          message_title: ${{ github.event.client_payload.message_title }}
+          message_id: ${{ inputs.message_id }}
+          message_title: ${{ inputs.message_title }}
 
       - name: Commit and Push Changes
         run: |
           cd satsukitalk
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add title.json
+          git add title/*
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Save title - $message_id - $message_title - $(date)"
-            git push
-            echo "Changes committed and pushed."
+            attempt=0
+            max_attempts=3
+            until [ $attempt -ge $max_attempts ]
+            do
+              if git push; then
+                echo "Changes committed and pushed."
+                break
+              else
+                attempt=$((attempt+1))
+                echo "Push failed. Attempt $attempt/$max_attempts. Running git pull and retrying..."
+                git pull --rebase
+                sleep 5
+              fi
+            done
+            if [ $attempt -eq $max_attempts ]; then
+              echo "Push failed after $max_attempts attempts."
+              exit 1
+            fi
           else
             echo "No changes to commit."
           fi
         env:
-          message_id: ${{ github.event.client_payload.message_id }}
-          message_title: ${{ github.event.client_payload.message_title }}
+          message_id: ${{ inputs.message_id }}
+          message_title: ${{ inputs.message_title }}
