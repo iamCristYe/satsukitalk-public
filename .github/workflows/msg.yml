@@ -1,27 +1,13 @@
-name: Save message title
+name: Check message
 
 on:
   workflow_dispatch:
-    inputs:
-      message_id:
-        description: 'Unique message ID'
-        required: true
-        type: string
-      message_title:
-        description: 'Title of the message'
-        required: true
-        type: string
 
 jobs:
-  save-title:
+  msg:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print received payload
-        run: |
-          echo "message_id: ${{ inputs.message_id }}"
-          echo "message_title: ${{ inputs.message_title }}"
-
       - name: Clone Private Repo
         env:
           PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
@@ -37,19 +23,16 @@ jobs:
       - name: Run Python script
         run: |
           cd satsukitalk
-          python save_title.py
-        env:
-          message_id: ${{ inputs.message_id }}
-          message_title: ${{ inputs.message_title }}
+          python check_msg.py
 
       - name: Commit and Push Changes
         run: |
           cd satsukitalk
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add title/*
+          git add sent.json
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Save title - $message_id - $message_title - $(date)"
+            git commit -m "Save title - $(date)"
             attempt=0
             max_attempts=5
             until [ $attempt -ge $max_attempts ]
@@ -71,6 +54,3 @@ jobs:
           else
             echo "No changes to commit."
           fi
-        env:
-          message_id: ${{ inputs.message_id }}
-          message_title: ${{ inputs.message_title }}
