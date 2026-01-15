@@ -1,0 +1,52 @@
+name: Save message title
+
+on:
+  repository_dispatch:
+    types: [save-title]
+
+jobs:
+  save-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print received payload
+        run: |
+          echo "message_id: ${{ github.event.client_payload.message_id }}"
+          echo "message_title: ${{ github.event.client_payload.message_title }}"
+
+      - name: Clone Private Repo
+        env:
+          PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
+        run: |
+          git clone https://x-access-token:${PAT_GITHUB}@github.com/iamCristYE/satsukitalk.git
+          cd satsukitalk
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' # Specify the Python version you need
+   
+      - name: Run Python script
+        run: |
+          cd satsukitalk
+          python save_title.py
+        env:
+          message_id: ${{ github.event.client_payload.message_id }}
+          message_title: ${{ github.event.client_payload.message_title }}
+
+      - name: Commit and Push Changes
+        run: |
+          cd satsukitalk
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add title.json
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Save title - $message_id - $message_title - $(date)"
+            git push
+            echo "Changes committed and pushed."
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          message_id: ${{ github.event.client_payload.message_id }}
+          message_title: ${{ github.event.client_payload.message_title }}
