@@ -32,7 +32,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add sent.json
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Save title - $(date)"
+            git commit -m "Send Message - $(date)"
             attempt=0
             max_attempts=5
             until [ $attempt -ge $max_attempts ]

@@ -1,4 +1,4 @@
-name: Save message title
+name: Save message subject
 
 on:
   workflow_dispatch:
@@ -7,20 +7,20 @@ on:
         description: 'Unique message ID'
         required: true
         type: string
-      message_title:
-        description: 'Title of the message'
+      message_subject:
+        description: 'Subject of the message'
         required: true
         type: string
 
 jobs:
-  save-title:
+  save-subject:
     runs-on: ubuntu-latest
 
     steps:
       - name: Print received payload
         run: |
           echo "message_id: ${{ inputs.message_id }}"
-          echo "message_title: ${{ inputs.message_title }}"
+          echo "message_subject: ${{ inputs.message_subject }}"
 
       - name: Clone Private Repo
         env:
@@ -37,19 +37,19 @@ jobs:
       - name: Run Python script
         run: |
           cd satsukitalk
-          python save_title.py
+          python save_subject.py
         env:
           message_id: ${{ inputs.message_id }}
-          message_title: ${{ inputs.message_title }}
+          message_subject: ${{ inputs.message_subject }}
 
       - name: Commit and Push Changes
         run: |
           cd satsukitalk
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add title/*
+          git add subject/*
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Save title - $message_id - $message_title - $(date)"
+            git commit -m "Save subject - $message_id - $message_subject - $(date)"
             attempt=0
             max_attempts=5
             until [ $attempt -ge $max_attempts ]
@@ -73,4 +73,4 @@ jobs:
           fi
         env:
           message_id: ${{ inputs.message_id }}
-          message_title: ${{ inputs.message_title }}
+          message_subject: ${{ inputs.message_subject }}
