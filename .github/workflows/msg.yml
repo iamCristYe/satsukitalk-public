@@ -30,7 +30,7 @@ jobs:
           cd satsukitalk
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add sent.json
+          git add data.json
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Send Message - $(date)"
             attempt=0
