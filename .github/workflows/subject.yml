@@ -41,6 +41,7 @@ jobs:
         env:
           message_id: ${{ inputs.message_id }}
           message_subject: ${{ inputs.message_subject }}
+          message_content_id: ${{ inputs.message_content_id }}
 
       - name: Commit and Push Changes
         run: |
