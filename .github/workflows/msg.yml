@@ -2,12 +2,13 @@ name: Check message
 
 on:
   workflow_dispatch:
+  schedule: 
+    - cron: "*/15 0-15 * * *"     # every 15 minutes during 23:00 UTC hour - cron: "*/15 0-15 * * *" # every 15 minutes from 00:00 to 15:59 UTC
+
 
 jobs:
   msg:
     runs-on: ubuntu-latest
-    schedule: 
-    - cron: "*/15 0-15 * * *"     # every 15 minutes during 23:00 UTC hour - cron: "*/15 0-15 * * *" # every 15 minutes from 00:00 to 15:59 UTC
 
     steps:
       - name: Clone Private Repo
