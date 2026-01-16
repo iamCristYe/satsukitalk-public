@@ -25,6 +25,7 @@ jobs:
    
       - name: Run Python script
         run: |
+          pip install requests
           cd satsukitalk
           python check_msg.py
 
