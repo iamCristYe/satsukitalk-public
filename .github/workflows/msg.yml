@@ -32,7 +32,7 @@ jobs:
           pip install requests
           cd satsukitalk
           python check_msg.py
-          python check_msg_memorial.py
+          # python check_msg_memorial.py
 
       - name: Commit and Push Changes
         run: |
