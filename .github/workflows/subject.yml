@@ -55,7 +55,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add subject/*
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Save subject - $message_id - $message_subject - $(date)"
+            git commit -m "Save subject - $message_id - $message_subject - $(TZ=Asia/Tokyo date)"
             attempt=0
             max_attempts=5
             until [ $attempt -ge $max_attempts ]
