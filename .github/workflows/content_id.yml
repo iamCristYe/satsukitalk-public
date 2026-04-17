@@ -7,6 +7,10 @@ on:
         description: 'message_content_id'
         required: true
         type: string
+      member_name:
+        description: 'member_name'
+        required: false
+        type: string
 
 jobs:
   save-content-id:
@@ -16,6 +20,7 @@ jobs:
       - name: Print received payload
         run: |
           echo "message_content_id: ${{ inputs.message_content_id }}"
+          echo "member_name: ${{ inputs.member_name }}"
 
       - name: Clone Private Repo
         env:
@@ -35,13 +40,14 @@ jobs:
           python save_content_id.py
         env:
           message_content_id: ${{ inputs.message_content_id }}
+          member_name: ${{ inputs.member_name }}
 
       - name: Commit and Push Changes
         run: |
           cd satsukitalk
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add subject/sugawara-satsuki.json
+          git add subject/*.json
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Save content_id - $message_content_id - $(TZ=Asia/Tokyo date)"
             attempt=0
@@ -67,6 +73,7 @@ jobs:
           fi
         env:
           message_content_id: ${{ inputs.message_content_id }}
+          member_name: ${{ inputs.member_name }}
 
       - name: Dispatch workflow in satsukitalk-public (workflow_dispatch)
         env:
